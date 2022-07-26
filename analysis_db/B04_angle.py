@@ -1,6 +1,5 @@
 
 import os, sys
-#execfile(os.environ['PYTHONSTARTUP'])
 
 """
 This file open a ICEsat2 track applied filters and corections and returns smoothed photon heights on a regular grid in an .nc file.
@@ -8,9 +7,8 @@ This is python 3
 """
 
 exec(open(os.environ['PYTHONSTARTUP']).read())
-exec(open(STARTUP_2021_IceSAT2).read())
+exec(open(STARTUP_2021_IceSAT2_release).read())
 
-#%matplotlib inline
 
 import ICEsat2_SI_tools.convert_GPS_time as cGPS
 import h5py
@@ -48,18 +46,9 @@ col_dict = col.rels
 #import s3fs
 # %%
 track_name, batch_key, test_flag = io.init_from_input(sys.argv) # loads standard experiment
-#track_name, batch_key, test_flag = '20190605061807_10380310_004_01', 'SH_batch01', False
-#track_name, batch_key, test_flag = '20190601094826_09790312_004_01', 'SH_batch01', False
-#track_name, batch_key, test_flag = '20190207111114_06260210_004_01', 'SH_batch02', False
-#track_name, batch_key, test_flag = '20190219073735_08070210_004_01', 'SH_batch02', False
-#track_name, batch_key, test_flag = '20190215184558_07530210_004_01', 'SH_batch02', False
 
-# good track
-#track_name, batch_key, test_flag = '20190502021224_05160312_004_01', 'SH_batch02', False
-#track_name, batch_key, test_flag = '20190502050734_05180310_004_01', 'SH_batch02', False
-#track_name, batch_key, test_flag = '20190210143705_06740210_004_01', 'SH_batch02', False
 #track_name, batch_key, test_flag = 'NH_20190301_09580203', 'NH_batch05', True
-track_name, batch_key, test_flag = 'SH_20190210_06740210', 'SH_publish', True
+#track_name, batch_key, test_flag = 'SH_20190210_06740210', 'SH_publish', True
 
 #print(track_name, batch_key, test_flag)
 hemis, batch = batch_key.split('_')

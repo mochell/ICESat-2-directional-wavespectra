@@ -1,6 +1,5 @@
 
 import os, sys
-#execfile(os.environ['PYTHONSTARTUP'])
 
 """
 This file open a ICEsat2 track applied filters and corections and returns smoothed photon heights on a regular grid in an .nc file.
@@ -8,14 +7,12 @@ This is python 3
 """
 
 exec(open(os.environ['PYTHONSTARTUP']).read())
-exec(open(STARTUP_2021_IceSAT2).read())
+exec(open(STARTUP_2021_IceSAT2_release).read())
 
 #%matplotlib inline
 from threadpoolctl import threadpool_info, threadpool_limits
 from pprint import pprint
 
-
-import ICEsat2_SI_tools.convert_GPS_time as cGPS
 import h5py
 import ICEsat2_SI_tools.io as io
 import ICEsat2_SI_tools.spectral_estimates as spec
@@ -26,13 +23,7 @@ import copy
 import spicke_remover
 import datetime
 import generalized_FT as gFT
-from scipy.ndimage.measurements import label
 
-# from guppy import hpy
-# h=hpy()
-# h.heap()
-#import s3fs
-#from memory_profiler import profile
 import tracemalloc
 
 def linear_gap_fill(F, key_lead, key_int):
@@ -52,28 +43,12 @@ def linear_gap_fill(F, key_lead, key_int):
 
 # %%
 track_name, batch_key, test_flag = io.init_from_input(sys.argv) # loads standard experiment
-#track_name, batch_key, test_flag = '20190605061807_10380310_004_01', 'SH_batch01', False
-#track_name, batch_key, test_flag = '20190601094826_09790312_004_01', 'SH_batch01', False
-#track_name, batch_key, test_flag = '20190207111114_06260210_004_01', 'SH_batch02', False
-#track_name, batch_key, test_flag = '20190208152826_06440210_004_01', 'SH_batch01', False
-#track_name, batch_key, test_flag = '20190213133330_07190212_004_01', 'SH_batch02', False
-#track_name, batch_key, test_flag = '20190205231558_06030212_004_01', 'SH_batch02', False
-
-#local track
-#track_name, batch_key, test_flag = '20190219073735_08070210_004_01', 'SH_batch02', False
-#track_name, batch_key, test_flag = 'NH_20190301_09580203', 'NH_batch05', False
-
-#track_name, batch_key, test_flag = 'NH_20190301_09590203', 'NH_batch05', False
-#track_name, batch_key, test_flag = 'SH_20190101_00630212', 'SH_batch04', False
-#track_name, batch_key, test_flag = 'NH_20190301_09570205',  'NH_batch05', True
-#track_name, batch_key, test_flag = 'SH_20190219_08070212',  'SH_publish', True
 
 #track_name, batch_key, test_flag = 'NH_20190302_09830203',  'NH_batch06', True
 
 
 #print(track_name, batch_key, test_flag)
 hemis, batch = batch_key.split('_')
-#track_name= '20190605061807_10380310_004_01'
 ATlevel= 'ATL03'
 
 load_path   = mconfig['paths']['work'] + '/'+ batch_key +'/B01_regrid/'
@@ -89,8 +64,6 @@ bad_track_path =mconfig['paths']['work'] +'bad_tracks/'+ batch_key+'/'
 # %%
 
 all_beams   = mconfig['beams']['all_beams']
-high_beams  = mconfig['beams']['high_beams']
-low_beams   = mconfig['beams']['low_beams']
 #Gfilt   = io.load_pandas_table_dict(track_name + '_B01_regridded', load_path) # rhis is the rar photon data
 
 # laod with pandas
@@ -163,29 +136,6 @@ kk          = kk[k_0<=kk]
 #dk = np.diff(kk).mean()
 print('2 M = ',  kk.size *2 )
 
-
-# for k in all_beams:
-#     #I = G_gFT[k]
-#     I2 = Gd_cut
-#     #plt.plot(I['x_coord'], I['y_coord'], linewidth  =0.3)
-#     plt.plot( I2['x']/1e3, I2['dist']/1e3)
-
-
-# # %%
-# xscale= 1e3
-# F= M.figure_axis_xy(5, 3, view_scale= 0.6)
-# for k in all_beams:
-#     I = Gd[k]#['x']
-#     #I = Gd_cut
-#     plt.plot( I['x'][:]/xscale  , I['y'][:]/xscale , '.' , markersize = 0.3)
-#     #plt.xlim(3e6, 3.25e6)
-#
-# #F.ax.axhline(0, color='gray', zorder= 2)
-#
-# plt.title('B01 filter and regrid | ' + track_name +'\npoleward '+str(track_poleward)+' \n \n', loc='left')
-# plt.xlabel('along track distance (km)')
-# plt.ylabel('across track distance (km)')
-
 # %%
 
 #Gd.keys()
@@ -218,10 +168,13 @@ for k in all_beams:
 #print('!!!!!!!!!!!! test run')
 #print( '-reduced xlims')
 #xlims = xlims[0],xlims[1]/2
-print('-reduced frequency resolution')
-kk= kk[::2]
+
+#print('-reduced frequency resolution')
+#kk= kk[::2]
+
 #print('-reduced number of beams')
 #all_beams = high_beams
+
 print('set xlims: ', xlims)
 print('Loop start:  ', tracemalloc.get_traced_memory()[0]/1e6, tracemalloc.get_traced_memory()[1]/1e6)
 
@@ -231,7 +184,6 @@ G_gFT_x = dict()
 G_rar_fft= dict()
 Pars_optm = dict()
 #imp.reload(spec)
-
 
 
 k=all_beams[0]
@@ -252,12 +204,11 @@ for k in all_beams:
     # cut data:
     x_mask= (x>=xlims[0]) & (x<=xlims[1])
     x = x[x_mask]
-    #xlims   = x.iloc[0], x.iloc[-1]
     dd      = np.copy(Gd_cut[hkey])
 
     dd_error = np.copy(Gd_cut['heights_c_std'])
     dd_error[np.isnan(dd_error)] = 100
-    #plt.hist(1/dd_weight, bins=40)
+
     F = M.figure_axis_xy(6, 3)
     plt.subplot(2, 1, 1)
     #plt.plot(x, dd, 'gray', label='displacement (m) ')
@@ -266,10 +217,6 @@ for k in all_beams:
     dd      = np.gradient(dd)
     dd, _   = spicke_remover.spicke_remover(dd, spreed=10, verbose=False)
     dd_nans = (np.isnan(dd) ) + (Gd_cut['N_photos'] <= 5)
-
-    # dd_filled = np.copy(dd)
-    # dd_filled[dd_nans] = 0
-    #win = create_weighted_window(dd_filled)
 
     # using gappy data
     dd_no_nans = dd[~dd_nans] # windowing is applied here
@@ -282,9 +229,6 @@ for k in all_beams:
 
 
     print('gFT')
-    #S_pwelch_k2 = np.arange(S_pwelch_k[1], S_pwelch_k[-1], S_pwelch_dk*2 )
-
-    #imp.reload(gFT)
     with threadpool_limits(limits=N_process, user_api='blas'):
         pprint(threadpool_info())
 
@@ -303,7 +247,6 @@ for k in all_beams:
 
             xi_1=GG_x.x[i]
             xi_2=GG_x.x[i+1]
-            #if k%2 ==0:
 
             F = M.figure_axis_xy(16, 2)
             eta  = GG_x.eta
@@ -327,8 +270,6 @@ for k in all_beams:
             # oringial data
             plt.plot(x, dd, '-', c='k',linewidth=2,  alpha =0.6, zorder=11)
             #plt.plot(x, dd, '.', c='k',markersize=3,  alpha =0.5)
-
-
             #plt.plot(x[~dd_nans], dd_error[~dd_nans], '.', c='green',linewidth=1,  alpha =0.5)
 
             F.ax.axvline(xi_1 + eta[0].data , linewidth=4,  color=c1, alpha=0.5)
@@ -469,9 +410,7 @@ def repack_attributes(DD):
 #G_gFT[G_gFT_wmean.beam.data[0]]     =G_gFT_wmean
 #G_rar_fft[G_fft_wmean.beam.data[0]] =G_fft_wmean
 
-
 beams_missing = set(all_beams) - set(G_gFT.keys())
-beams_missing
 
 def make_dummy_beam(GG, beam):
 
@@ -503,7 +442,6 @@ G_rar_fft.keys()
 G_gFT        = repack_attributes(G_gFT)
 G_gFT_x      = repack_attributes(G_gFT_x)
 G_rar_fft    = repack_attributes(G_rar_fft)
-
 
 # %% save results
 G_gFT_DS         = xr.merge(G_gFT.values())

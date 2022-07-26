@@ -1,15 +1,12 @@
 import os, sys
-#execfile(os.environ['PYTHONSTARTUP'])
 
 """
 This file open a ICEsat2 track applied filters and corections and returns smoothed photon heights on a regular grid in an .nc file.
 This is python 3
 """
-# exec(open(os.environ['PYTHONSTARTUP']).read())
-# exec(open(STARTUP_2019_DP).read())
 
 exec(open(os.environ['PYTHONSTARTUP']).read())
-exec(open(STARTUP_2021_IceSAT2).read())
+exec(open(STARTUP_2021_IceSAT2_release).read())
 
 import datetime
 import h5py
@@ -36,15 +33,7 @@ all_beams   = mconfig['beams']['all_beams']
 ID_name, batch_key, ID_flag = io.init_from_input(sys.argv) # loads standard experiment
 
 # SH example
-#ID_name, batch_key, ID_flag = 'SH_20190101_00550210', 'SH_batch04', True
 #ID_name, batch_key, ID_flag = 'SH_20190102_00770210', 'SH_batch04', True
-
-# NH example
-#ID_name, batch_key, ID_flag = 'NH_20190301_09560203', 'NH_batch05', True # poleward false
-#ID_name, batch_key, ID_flag = 'NH_20190301_09560205', 'NH_batch05', True # poleward false
-
-# ID example
-#ID_name, batch_key, ID_flag = '20190101015140_00550210_005_01', 'SH_batch04', False
 
 
 #imp.reload(io)
@@ -158,7 +147,6 @@ io.write_track_to_HDF5(SS, 'A01c_ATL03_'+ ID_name+'_seg'      , save_path_data)
 #io.write_track_to_HDF5(TCC, 'A01c_ATL03_'+ ID_name+'_c', save_path_data)
 
 
-
 # %% for testing
 # plt.plot(TT['gt1l']['lons'], TT['gt1l']['lats'], '.')
 # plt.plot(ID['pars']['start']['longitude'],ID['pars']['start']['latitude'], '.g', markersize= 12)
@@ -166,7 +154,6 @@ io.write_track_to_HDF5(SS, 'A01c_ATL03_'+ ID_name+'_seg'      , save_path_data)
 
 
 # %%
-
 # TT['gt1l']['delta_time'].min()
 # SS['gt1l']['delta_time'].min()
 #

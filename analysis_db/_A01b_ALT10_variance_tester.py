@@ -9,7 +9,7 @@ This is python 3
 # exec(open(STARTUP_2019_DP).read())
 
 exec(open(os.environ['PYTHONSTARTUP']).read())
-exec(open(STARTUP_2021_IceSAT2).read())
+exec(open(STARTUP_2021_IceSAT2_release).read())
 
 import datetime
 import h5py

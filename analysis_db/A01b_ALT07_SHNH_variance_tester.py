@@ -10,93 +10,62 @@ This script opens an ATL07 track and tests if there is sufficient data and maybe
 
 """
 
-# exec(open(os.environ['PYTHONSTARTUP']).read())
-# exec(open(STARTUP_2019_DP).read())
-sys.path
 exec(open(os.environ['PYTHONSTARTUP']).read())
-exec(open(STARTUP_2021_IceSAT2).read())
+exec(open(STARTUP_2021_IceSAT2_release).read())
 
 from threadpoolctl import threadpool_info, threadpool_limits
 from pprint import pprint
 
-import datetime
 import h5py
-from random import sample
 import imp
-import ICEsat2_SI_tools.convert_GPS_time as cGPS
 import ICEsat2_SI_tools.io as io
 from spectral_estimates import create_chunk_boundaries_unit_lengths, create_chunk_boundaries
 import spectral_estimates as spec
 import m_tools_ph3 as MT
-import filter_regrid as regrid
-
 import concurrent.futures as futures
-
 import piecewise_regression
 
-#import s3fs
-#processed_ATL03_20190605061807_10380310_004_01.h5
-
-#imp.reload(io)
 track_name, batch_key, test_flag = io.init_from_input(sys.argv) # loads standard experiment
 
-# track NH
-#track_name, batch_key, test_flag = '20190301004639_09560201_005_01', 'NH_batch05', False # <-- !
-#track_name, batch_key, test_flag = '20190101180843_00660201_005_01', 'SH_batch04', False
 
-# track SH
-#track_name, batch_key, test_flag = '20190101084259_00600201_005_01', 'SH_batch04', False
-#track_name, batch_key, test_flag = '20190102130012_00780201_005_01', 'SH_batch04', False
-#track_name, batch_key, test_flag = '20190101005132_00550201_005_01', 'SH_batch04', False # <-- !
-#track_name, batch_key, test_flag = '20190101225136_00690201_005_01', 'SH_batch04', False
+# test_flag = True will not download the ATL03 track,
+# test_flag = False will downlaod the ATL03 data using  https://github.com/tsutterley/read-icesat-2
 
-#track_name, batch_key, test_flag = '20190219063727_08070201_005_01', 'SH_publish', False
+# list of  published SH tracks
+#track_name, batch_key, test_flag = '20190219063727_08070201_005_01', 'SH_publish', True
+track_name, batch_key, test_flag = '20190219063727_08070201_005_01', 'SH_publish', True
+# see /work/SH_publish/A01b_ID/ folder for list of possible tracks to run in this minial example
 
 
-#track_name, batch_key, test_flag = '20190208142818_06440201_005_01', 'SH_publish', False
-
-
-#print(track_name, batch_key, test_flag)
 hemis, batch = batch_key.split('_')
-#track_name= '20190605061807_10380310_004_01'
 
 ATlevel= 'ATL07-02' if hemis == 'SH' else 'ATL07-01'
 
 load_path   = mconfig['paths']['scratch'] +'/'+ batch_key +'/'
 load_file   = load_path + ATlevel+'_'+track_name+'.h5'
 
-save_path  = mconfig['paths']['work'] +'/'+ batch_key +'/A01b_ID/'
-scratch_path = mconfig['paths']['scratch'] +'/'+ batch_key +'/'
-plot_path  = mconfig['paths']['plot']+ '/'+hemis+'/'+batch_key+'/A01b/'
-#bad_track_path =mconfig['paths']['work'] +'bad_tracks/'+ batch_key+'/'
+save_path   = mconfig['paths']['work'] +'/'+ batch_key +'/A01b_ID/'
+scratch_path= mconfig['paths']['scratch'] +'/'+ batch_key +'/'
+plot_path   = mconfig['paths']['plot']+ '/'+hemis+'/'+batch_key+'/A01b/'
+
 MT.mkdirs_r(save_path)
 plot_flag   = True
-test_flag   = False #writes dummy variable for download files, instead of downloading
+#test_flag   = True #writes dummy variable for download files, instead of downloading
 N_process   = 4
-# username= "mhell@ucsd.edu"
-# pword   = "@[49[4tK\-qBWB%5"
 
 # %%
 # test which beams exist:
 all_beams = mconfig['beams']['all_beams']
 
 
-try:
-    f     = h5py.File(load_file, 'r')
-except:
-    print('file not found, exit')
-    MT.json_save(name='A01b_'+track_name+'_success', path=save_path, data= {'reason':'ATL07 file not found, exit'})
-    exit()
+#try:
+f     = h5py.File(load_file, 'r')
+# except:
+# print('file not found, exit')
+# MT.json_save(name='A01b_'+track_name+'_success', path=save_path, data= {'reason':'ATL07 file not found, exit'})
+# exit()
 
 beams     = [b if b in f.keys() else None for b in all_beams]
-imp.reload(regrid)
-#track_poleward    = regrid.track_pole_ward_file(f, product='ATL10')
-# print('poleward track is' , track_poleward)
-# ATL03       =   h5py.File(load_file, 'r')
-# ATL03['orbit_info'].keys()
-# ATL03['orbit_info/lan'][:]
-#
-# ATL03['gt1l/freeboard_beam_segment/height_segments'].keys()
 
 # %%
 def cut_rear_data(xx0, dd0, N_seg= 20):
@@ -190,10 +159,10 @@ def get_breakingpoints(xx, dd ,Lmeter= 3000):
 
 DD_slope  = pd.DataFrame(index =beams, columns= ['TF1', 'TF2'])
 DD_data   = pd.DataFrame(index =beams, columns= ['TF1', 'TF2'])
+
 DD_region = pd.DataFrame(index =beams, columns= ['TF1', 'TF2'])
 DD_region[:] = (np.nan)
-# DD_pos_start = pd.DataFrame(index =beams, columns= ['TF1_lon', 'TF1_lat', 'TF2_lon', 'TF2_lat'])
-# DD_pos_end   = pd.DataFrame(index =beams, columns= ['TF1_lon', 'TF1_lat', 'TF2_lon', 'TF2_lat'])
+
 DD_pos_start = pd.DataFrame(index =beams, columns= ['TF1', 'TF2'])
 DD_pos_end   = pd.DataFrame(index =beams, columns= ['TF1', 'TF2'])
 
@@ -326,11 +295,6 @@ for k in beams:
         else:
             data_density =Tsel.shape[0]/abs(Tsel['x'].max() - Tsel['x'].min()) # datapoints per meters
 
-        # plt.plot(Tsel['x']/1e3, Tsel['ref']['beam_fb_sigma'], '.k')
-        # plt.plot(Tsel['x']/1e3, Tsel['ref']['beam_fb_height'], '.r')
-        # plt.plot(Tsel['x']/1e3, Tsel['freeboard']['height_segment_height'], '.')
-        # #plt.xlim(60,70)
-        # plt.ylim(-1, 5)
         # limit number of processes
         # % cut data in the back: only usefull for SH:
         xx0, dd0 = np.array(Tsel['x']), np.array(Tsel['heights']['height_segment_height'])
@@ -372,8 +336,7 @@ for k in beams:
         DD_region.loc[k, TF] = region
         DD_pos_start.loc[k, TF]  =  Tsel.iloc[0]['ref']['longitude']  , Tsel.iloc[0]['ref']['latitude'],  Tsel.iloc[0]['ref']['seg_dist_x'],  Tsel.iloc[0]['time']['delta_time']
         DD_pos_end.loc[k,   TF]  =  Tsel.iloc[-1]['ref']['longitude'] , Tsel.iloc[-1]['ref']['latitude'],  Tsel.iloc[-1]['ref']['seg_dist_x'], Tsel.iloc[-1]['time']['delta_time']
-        # DD_pos_start.loc[k, [TF+'_lon', TF+'_lat']]  =  Tsel.iloc[0]['ref']['longitude']  , Tsel.iloc[0]['ref']['latitude'],  Tsel.iloc[0]['ref']['seg_dist_x'],  Tsel.iloc[0]['time']['delta_time']
-        # DD_pos_end.loc[k, [TF+'_lon', TF+'_lat']]    =  Tsel.iloc[-1]['ref']['longitude'] , Tsel.iloc[-1]['ref']['latitude'],  Tsel.iloc[-1]['ref']['seg_dist_x'], Tsel.iloc[-1]['time']['delta_time']
+
         print('result-------', k, TF, data_density, slope_test)
 
 
@@ -427,27 +390,10 @@ plt.legend()
 M.save_anyfig(plt.gcf(), name='A01b_'+track_name+'_'+ hemis+'_'+k  , path=plot_path)
 
 
-# %%
+# %% ----------------- this section is for downlaodig data, not needed for the working example ------------
 
-# plt.plot(Tsel['x'], Tsel['ref']['latitude'], 'b.', label ='TF2', zorder=0)
-# plt.scatter(Tsel['x'].iloc[0], Tsel['ref']['latitude'].iloc[0],s=50, color='green')
-# plt.scatter(Tsel['x'].iloc[-1], Tsel['ref']['latitude'].iloc[-1],s=50, color='red')
-
-
-#plt.close()
-#plt.show()
-
-# DD_pos_end
-#
-# DD_data
-# DD_slope
-#
-# %%
-
-# Test if 1st slope segment is negative. There might be better way to test for waves in the data
+#Test if 1st slope segment is negative. There might be better way to test for waves in the data
 DD_slope_mask = DD_slope < 1e-3
-# DD_slope < 1e-3
-# DD_slope < 0
 
 # if there is at leat one slope pair download data, otherwise write files and exit
 if ( (DD_slope_mask.sum() > 1).sum() > 0) :
@@ -462,7 +408,7 @@ else:
 # %%
 # initiate ID files
 ATL03_proposed, ATL03_remote_link, ATL03_remote= [],[],[]
-imp.reload(io)
+
 for TF,TF_poleward in zip(['TF1', 'TF2'], [TF1_poleward, TF2_poleward]):
     iregion = DD_region[TF][DD_slope_mask[TF]]
     if len(iregion) !=0:
@@ -550,8 +496,9 @@ def ATL03_download_worker(fname):
     print(fname, ' done')
 
 if test_flag:
-    for rname in remote_names:
-        MT.save_pandas_table({'dummy_download':DD_slope},rname.split('.')[0], scratch_path)
+    print('NO ATL03 files downloaded. Expected that ATL03 data already exsist')
+    # for rname in remote_names:
+    #     MT.save_pandas_table({'dummy_download':DD_slope},rname.split('.')[0], scratch_path)
 else:
     with futures.ThreadPoolExecutor(max_workers=3) as executor:
         A = list( executor.map(ATL03_download_worker, ATL03_remote)  )

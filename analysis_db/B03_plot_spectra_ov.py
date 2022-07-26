@@ -1,6 +1,5 @@
 
 import os, sys
-#execfile(os.environ['PYTHONSTARTUP'])
 
 """
 This file open a ICEsat2 track applied filters and corections and returns smoothed photon heights on a regular grid in an .nc file.
@@ -8,9 +7,7 @@ This is python 3
 """
 
 exec(open(os.environ['PYTHONSTARTUP']).read())
-exec(open(STARTUP_2021_IceSAT2).read())
-
-#%matplotlib inline
+exec(open(STARTUP_2021_IceSAT2_release).read())
 
 import ICEsat2_SI_tools.convert_GPS_time as cGPS
 import h5py
@@ -25,22 +22,11 @@ import datetime
 import generalized_FT as gFT
 from scipy.ndimage.measurements import label
 
-#import s3fs
 # %%
 track_name, batch_key, test_flag = io.init_from_input(sys.argv) # loads standard experiment
-#track_name, batch_key, test_flag = '20190605061807_10380310_004_01', 'SH_batch01', False
-#track_name, batch_key, test_flag = '20190601094826_09790312_004_01', 'SH_batch01', False
-#track_name, batch_key, test_flag = '20190207111114_06260210_004_01', 'SH_batch02', False
-#track_name, batch_key, test_flag = '20190208152826_06440210_004_01', 'SH_batch01', False
-#track_name, batch_key, test_flag = '20190213133330_07190212_004_01', 'SH_batch02', False
-#track_name, batch_key, test_flag = '20190207002436_06190212_004_01', 'SH_batch02', False
-#track_name, batch_key, test_flag = '20190206022433_06050212_004_01', 'SH_batch02', False
 
 #track_name, batch_key, test_flag = 'SH_20190101_00570212', 'SH_batch04', True
 
-
-#track_name, batch_key, test_flag = '20190219073735_08070210_004_01', 'SH_batch02', False
-#print(track_name, batch_key, test_flag)
 hemis, batch = batch_key.split('_')
 
 load_path   = mconfig['paths']['work'] +batch_key+'/B02_spectra/'
@@ -52,16 +38,12 @@ Gk = xr.open_dataset(load_file+'_gFT_k.nc')
 Gx = xr.open_dataset(load_file+'_gFT_x.nc')
 
 Gfft = xr.open_dataset(load_file+'_FFT.nc')
-# print(Gk)
-# print(Gx)
 time.sleep(5)
 
 # %%
 all_beams   = mconfig['beams']['all_beams']
 high_beams  = mconfig['beams']['high_beams']
 low_beams   = mconfig['beams']['low_beams']
-#Gfilt   = io.load_pandas_table_dict(track_name + '_B01_regridded', load_path) # rhis is the rar photon data
-#Gd      = io.load_pandas_table_dict(track_name + '_B01_binned' , load_path)  #
 col.colormaps2(21)
 
 # %% check paths (again)
@@ -292,74 +274,7 @@ plt.legend()
 F.save_light(path=plot_path, name = 'B03_specs_L'+str(Lmeters))
 
 
-# %%  define simple routines
-def plot_model_eta(D, ax,  offset = 0, xscale= 1e3 , **kargs ):
-    eta  = D.eta + D.x
-    y_data = D.y_model+offset
-    plt.plot(eta/xscale,y_data , **kargs)
-
-    ax.axvline(eta[0].data/xscale , linewidth=2,  color=kargs['color'], alpha=0.5)
-    ax.axvline(eta[-1].data/xscale, linewidth=2,  color=kargs['color'], alpha=0.5)
-
-def add_info(D, Dk, ylims):
-    eta  = D.eta + D.x
-    N_per_stancil, ksize = Dk.N_per_stancil.data , Dk.k.size
-    plt.text(eta[0].data, ylims[-1], '  N='+numtostr(N_per_stancil)  + ' N/2M= '+ fltostr(N_per_stancil/2/ksize, 1) )
-
-def plot_data_eta(D,  offset = 0,xscale= 1e3 ,  **kargs ):
-    eta_1  = D.eta + D.x
-    y_data = D.y_model +offset
-    plt.plot(eta_1/xscale,y_data , **kargs)
-    return eta_1
-
-
-# %% phase examples
-### overlapping views
-#for i in np.arange(0,29,2):
-# i = 4
-# c1= 'blue'
-# c2= 'red'
-#
-# Gx_1 = Gx.isel(x= i).sel(beam = k)
-# Gx_2 = Gx.isel(x= i+1).sel(beam = k)
-#
-# Gk_1 = Gk.isel(x= i).sel(beam = k)
-# Gk_2 = Gk.isel(x= i+1).sel(beam = k)
-#
-# fltostr = MT.float_to_str
-# numtostr = MT.num_to_str
-#
-# #if k%2 ==0:
-# font_for_print()
-# F = M.figure_axis_xy(9, 5, container =True, view_scale= 0.8)
-#
-# plt.suptitle('gFT Slope Spectrograms\n' + track_name, y = 0.98)
-# gs = GridSpec(3,4,  wspace=0.2,  hspace=.5)#figure=fig,
-#
-# ax0 = F.fig.add_subplot(gs[0, :])
-#
-#
-#
-# plot_model_eta(Gx_1, ax0, linestyle='-', color=c1, linewidth=0.4, alpha=1, zorder=12 )
-# plot_model_eta(Gx_2, ax0, linestyle='-', color=c2, linewidth=0.4, alpha=1, zorder=12 )
-#
-# ylims= -np.nanstd(Gx_1.y_data)*3, np.nanstd(Gx_1.y_data)*3
-#
-# add_info(Gx_1, Gk_1 , ylims )
-# add_info(Gx_2, Gk_1 , ylims )
-#
-# # oringial data
-#
-# eta_1= plot_data_eta(Gx_1 , offset= 0 , linestyle= '-', c='k',linewidth=1,  alpha =0.5, zorder=11)
-# eta_2= plot_data_eta(Gx_2  , offset= 0 , linestyle= '-', c='k',linewidth=1,  alpha =0.5, zorder=11)
-#
-# dx = eta_1.diff('eta').mean()
-# plt.xlim(eta_1[0].data - 40 * dx, eta_2[-1].data +  40 * dx )
-# plt.ylim(ylims[0], ylims[-1])
-#
-
 # %% Single views
-
 def plot_data_eta(D,  offset = 0  ,  **kargs ):
     eta_1  = D.eta# + D.x
     y_data = D.y_model +offset

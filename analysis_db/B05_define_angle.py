@@ -1,6 +1,5 @@
-
 import os, sys
-#execfile(os.environ['PYTHONSTARTUP'])
+
 
 """
 This file open a ICEsat2 track applied filters and corections and returns smoothed photon heights on a regular grid in an .nc file.
@@ -8,57 +7,33 @@ This is python 3
 """
 
 exec(open(os.environ['PYTHONSTARTUP']).read())
-exec(open(STARTUP_2021_IceSAT2).read())
+exec(open(STARTUP_2021_IceSAT2_release).read())
 xr.set_options(display_style='text')
-#%matplotlib inline
 
-import ICEsat2_SI_tools.convert_GPS_time as cGPS
 import h5py
 import ICEsat2_SI_tools.io as io
-import ICEsat2_SI_tools.spectral_estimates as spec
-
-import imp
-import copy
-import spicke_remover
-import datetime
-import concurrent.futures as futures
-
-from numba import jit
-
-from ICEsat2_SI_tools import angle_optimizer
-import ICEsat2_SI_tools.wave_tools as waves
-import concurrent.futures as futures
-
 import time
 import ICEsat2_SI_tools.lanczos as lanczos
-
+import ICEsat2_SI_tools.spectral_estimates as spec
 
 col.colormaps2(21)
-
 col_dict = col.rels
-#import s3fs
+
 # %%
 track_name, batch_key, test_flag = io.init_from_input(sys.argv) # loads standard experiment
-#track_name, batch_key, test_flag = '20190605061807_10380310_004_01', 'SH_batch01', False
-#track_name, batch_key, test_flag = '20190601094826_09790312_004_01', 'SH_batch01', False
-#track_name, batch_key, test_flag = '20190207111114_06260210_004_01', 'SH_batch02', False
-#track_name, batch_key, test_flag = '20190219073735_08070210_004_01', 'SH_batch02', False
-#track_name, batch_key, test_flag = '20190215184558_07530210_004_01', 'SH_batch02', False
-
-# good track
-#track_name, batch_key, test_flag = '20190502021224_05160312_004_01', 'SH_batch02', False
-#track_name, batch_key, test_flag = '20190502050734_05180310_004_01', 'SH_batch02', False
-#track_name, batch_key, test_flag = '20190216200800_07690212_004_01', 'SH_batch02', False
-
-#track_name, batch_key, test_flag = '20190213133330_07190212_004_01', 'SH_batch02', False
-#track_name, batch_key, test_flag = '20190219073735_08070210_004_01', 'SH_batch02', False
 #track_name, batch_key, test_flag =  'SH_20190224_08800212', 'SH_publish', True
+
+
+
+
+
+
+
 
 #print(track_name, batch_key, test_flag)
 hemis, batch = batch_key.split('_')
 #track_name= '20190605061807_10380310_004_01'
 ATlevel= 'ATL03'
-
 
 
 plot_path   = mconfig['paths']['plot'] + '/'+hemis+'/'+batch_key+'/' + track_name + '/B05_angle/'
@@ -88,21 +63,7 @@ Prior = MT.load_pandas_table_dict('/A02_'+track_name, load_path)['priors_hindcas
 
 save_path =  mconfig['paths']['work'] +batch_key+ '/B04_angle/'
 
-# font_for_print()
-# F = M.figure_axis_xy(5.5, 3, view_scale= 0.8)
-# plt.suptitle(track_name)
-# ax1 =  plt.subplot(2, 1, 1)
-# plt.title('Data in Beam', loc= 'left')
-#
-# xi =1
-
-#data = Marginals.isel(x=xi).sel(beam_group= 'group1').marginals
-# angle_mask = Marginals.angle[2:-2]
-#
-#data.T.plot(cmap= plt.cm.OrRd)
-
 # %%
-
 
 def derive_weights(weights):
     weights = (weights-weights.mean())/weights.std()
@@ -140,9 +101,6 @@ angle_mask = Marginals.angle *0 ==0
 angle_mask[0], angle_mask[-1] = False, False
 corrected_marginals = Marginals.marginals.isel(angle=angle_mask ) + Marginals.marginals.isel(angle=~angle_mask ).sum('angle')/sum(angle_mask).data
 
-# get groupweights
-# ----------------- thius does not work jet.ckeck with data on server how to get number of data points per stancil
-#Gx['x'] = Gx.x - Gx.x[0]
 
 # makde dummy variables
 M_final      = xr.full_like(corrected_marginals.isel(k=0, beam_group =0).drop('beam_group').drop('k'), np.nan)

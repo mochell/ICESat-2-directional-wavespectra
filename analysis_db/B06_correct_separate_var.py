@@ -1,6 +1,5 @@
 
 import os, sys
-#execfile(os.environ['PYTHONSTARTUP'])
 
 """
 This file open a ICEsat2 track applied filters and corections and returns smoothed photon heights on a regular grid in an .nc file.
@@ -8,41 +7,21 @@ This is python 3
 """
 
 exec(open(os.environ['PYTHONSTARTUP']).read())
-exec(open(STARTUP_2021_IceSAT2).read())
+exec(open(STARTUP_2021_IceSAT2_release).read())
 
-#%matplotlib inline
-
-import ICEsat2_SI_tools.convert_GPS_time as cGPS
 import h5py
-import ICEsat2_SI_tools.io as io
-import ICEsat2_SI_tools.spectral_estimates as spec
-import ICEsat2_SI_tools.lanczos as lanczos
 import time
-import imp
 import copy
-import spicke_remover
-import datetime
 import generalized_FT as gFT
 from scipy.ndimage.measurements import label
+import ICEsat2_SI_tools.io as io
 
 xr.set_options(display_style='text')
-#import s3fs
 # %%
 ID_name, batch_key, test_flag = io.init_from_input(sys.argv) # loads standard experiment
-#ID_name, batch_key, test_flag = '20190605061807_10380310_004_01', 'SH_batch01', False
-#ID_name, batch_key, test_flag = '20190601094826_09790312_004_01', 'SH_batch01', False
-#ID_name, batch_key, test_flag = '20190207111114_06260210_004_01', 'SH_batch02', False
-#ID_name, batch_key, test_flag = '20190208152826_06440210_004_01', 'SH_batch01', False
-#ID_name, batch_key, test_flag = '20190213133330_07190212_004_01', 'SH_batch02', False
-#ID_name, batch_key, test_flag = '20190207002436_06190212_004_01', 'SH_batch02', False
-#ID_name, batch_key, test_flag = '20190206022433_06050212_004_01', 'SH_batch02', False
-
-#ID_name, batch_key, test_flag = '20190219073735_08070210_004_01', 'SH_batch02', False
-#ID_name, batch_key, test_flag = '20190502021224_05160312_004_01', 'SH_batch02', False
-
 #ID_name, batch_key, test_flag =  'SH_20190208_06440212', 'SH_publish', True
 #ID_name, batch_key, test_flag =  'SH_20190219_08070210', 'SH_publish', True
-ID_name, batch_key, test_flag =  'SH_20190502_05160312', 'SH_publish', True
+#ID_name, batch_key, test_flag =  'SH_20190502_05160312', 'SH_publish', True
 
 #ID_name, batch_key, test_flag =  'NH_20190311_11200203', 'NH_batch06', True
 #ID_name, batch_key, test_flag =  'NH_20210312_11961005', 'NH_batch07', True
@@ -419,9 +398,6 @@ for x in G_gFT_smth.x.data:
     # plt.show()
     print('--------------------------')
 # %%
-# write k limits to datasets
-# lanczos.lanczos_filter_1d(G_gFT_smth.x, k_lim_list, 2)
-# lanczos.lanczos_filter_1d_wrapping
 
 font_for_pres()
 G_gFT_smth.coords['k_lim'] = ('x', k_lim_list )
