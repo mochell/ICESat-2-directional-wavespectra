@@ -1,4 +1,4 @@
-# How to use this code
+# Code for Directional Surface Wave Spectra And Sea Ice Structure from ICEsat-2 Altimetry
 
 Momme Hell,
 July 2022,
