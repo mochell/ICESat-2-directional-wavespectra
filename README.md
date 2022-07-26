@@ -1,7 +1,8 @@
 # How to use this code
 
-Momme Hell
-July 2022
+Momme Hell,
+July 2022,
+Brown University
 
 This is a minimal Working example for „“. We provide the original ATL03 and ATL07 data from XX downloaded on:
 The in Hell and Horvat described analysis can be reproduced for the example tracks following the guide below
@@ -74,13 +75,15 @@ The plots will occur at plots/SH/SH_publish/
 
 ### A01c) merging the ATL03 data file to one new file and apply corrections:
 
-```python3 A01c_mergefiles.py SH_20190224_08800210 SH_publish True
+```
+python3 A01c_mergefiles.py SH_20190224_08800210 SH_publish True
 ```
 The output is saved in data/scratch/SH_publish/A01c_ ...
 
 ### A02b) deriving WW3 priors:
 
-```python3 A02b_WW3_hindcast_prior.py SH_20190224_08800210 SH_publish True
+```
+python3 A02b_WW3_hindcast_prior.py SH_20190224_08800210 SH_publish True
 ```
 The output is saved in data/scratch/SH_publish/A01c_ ...
 
