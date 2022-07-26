@@ -7,21 +7,29 @@ Brown University
 This is a minimal Working example for „“. We provide the original ATL03 and ATL07 data from XX downloaded on:
 The in Hell and Horvat described analysis can be reproduced for the example tracks following the guide below
 
+This package uses and modifies code from icesat2_toolkit
+https://read-icesat-2.readthedocs.io/
+https://github.com/tsutterley/read-ICESat-2
+(One might need to follow their authentication steps to download data ...)
+
 ## python environment:
-
-
+The python environment is provided in
+```
+2021_ICESat2_tracks_py37.yml
+```
+Instructions of how to install can be found here:
+https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
 
 ## setting up environment
 
-
-After installing and activating the python environment set the basepath at the following places:
-in config/2021_IceSAT2_startup.py
+After installing and activating the python environment set the base path at the following places:
+#### in config/2021_IceSAT2_startup.py
 base_path = "your/path/to/base/"
 
-in config/config.json
+#### in config/config.json
 replace "/Users/Shared/Projects/2021_IceSAT2_tracks/release" with "your/path/to/base/"
 
-specifially for:
+specifically for the following variables in config.json:
 ```
 "work": "/Users/Shared/Projects/2021_IceSAT2_tracks/release/data/work/",
 "scratch": "/Users/Shared/Projects/2021_IceSAT2_tracks/release/data/scratch/",
@@ -34,7 +42,7 @@ specifially for:
 
 ## Run code:
 The provided code is a simplified from a processing structure Maintained via make files. Here we use simple manual execution.
-The easiest way to run the code is through command lines. The processing steps are numbered from A01, A02, .. to B01, B03, .. The A section refers to downlaoding and prehandling the data and the B section to the part where the algorithm(s) are applied.
+The easiest way to run the code is through command lines. The processing steps are numbered from A01, A02, .. to B01, B03, .. The A section refers to downloading and pre-handling the data and the B section to the part where the algorithm(s) are applied.
 
 ### A01b) Find ATL03 and create case ID
 This code find the ATL03 tracks to the corresponding ATL07/10 tracks. Here the ATL03 and ATL07 tracks are already downloaded, but to check one can run in the analysis_db/ folder:
@@ -141,8 +149,8 @@ output is at work/SH_publish/B04_angle/
 plots are found in the respective plot folder
 
 These files constain:
--  the original re-binned photon data
--  modeled wave heights in real or spectral space including their uncertainties.
--  The variance decomposition in real space
-- the spectral estimates with angle corrected coordinates
-- the "best guess" 2D spectra along the track.
+- The original re-binned photon data
+- The modeled wave heights in real or spectral space including their uncertainties.
+- The variance decomposition in real space
+- The spectral estimates with angle corrected coordinates
+- The "best guess" 2D spectra along the track.
