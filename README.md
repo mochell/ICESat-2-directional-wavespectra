@@ -1,5 +1,9 @@
 # Code for Directional Surface Wave Spectra And Sea Ice Structure from ICEsat-2 Altimetry
 
+
+[![DOI](https://zenodo.org/badge/518172687.svg)](https://zenodo.org/badge/latestdoi/518172687)
+
+
 Momme Hell,
 July 2022,
 Brown University
