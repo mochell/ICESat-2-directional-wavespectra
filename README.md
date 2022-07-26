@@ -21,6 +21,7 @@ in config/config.json
 replace "/Users/Shared/Projects/2021_IceSAT2_tracks/release" with "your/path/to/base/"
 
 specifially for:
+```
 "work": "/Users/Shared/Projects/2021_IceSAT2_tracks/release/data/work/",
 "scratch": "/Users/Shared/Projects/2021_IceSAT2_tracks/release/data/scratch/",
 "plot": "/Users/Shared/Projects/2021_IceSAT2_tracks/release/plots/",
@@ -28,7 +29,7 @@ specifially for:
 "local_script": "/Users/Shared/Projects/2021_IceSAT2_tracks/release/modules/",
 "config": "/Users/Shared/Projects/2021_IceSAT2_tracks/release/config/",
 "base": "/Users/Shared/Projects/2021_IceSAT2_tracks/release/"
-
+```
 
 ## Run code:
 The provided code is a simplified from a processing structure Maintained via make files. Here we use simple manual execution.
