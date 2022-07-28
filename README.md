@@ -65,7 +65,18 @@ The data for the following track IDs are provided, such that the above command c
 20190502005851_05160301_005_01
 ```
 
-Each of these track IDs create two IDs one for the dominantly descending or ascending part of the track. The manuscript mainly uses the following three IDs:
+Each of these track IDs create two IDs one for the dominantly descending or ascending part of the track.
+The ID follow the following rule (similar to https://icesat-2.gsfc.nasa.gov/sites/default/files/page_files/ICESat2_ATL07_ATL10_ATBD_r005.pdf):
+
+``
+PP_YYYMMDD_RGTTccss_vvv_rr
+``
+RGT => Reference Ground Track
+cc => Cycle Number
+ss => Segment number (latitude band)
+vvv_rr => Version and revision numbers
+
+The manuscript mainly uses the following three IDs:
 ```
 SH_20190224_08800210
 SH_20190219_08070210
