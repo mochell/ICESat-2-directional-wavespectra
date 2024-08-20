@@ -7,8 +7,9 @@
 Momme Hell,
 July 2022,
 Brown University
-https://tc.copernicus.org/articles/18/341/2024/ 
-This is a minimal Working example for „A method for constructing directional surface wave spectra  from ICESat-2 altimetry“. We provide the original ATL03 and ATL07 data from XX downloaded on:
+
+This is a minimal Working example for [A method for constructing directional surface wave spectra from ICESat-2 altimetry](https://tc.copernicus.org/articles/18/341/2024/ 
+). We provide the original ATL03 and ATL07 data from XX downloaded on:
 The in Hell and Horvat described analysis can be reproduced for the example tracks following the guide below
 
 This package uses and modifies code from icesat2_toolkit
