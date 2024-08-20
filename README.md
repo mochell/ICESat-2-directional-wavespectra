@@ -1,4 +1,4 @@
-# Code for Directional Surface Wave Spectra And Sea Ice Structure from ICEsat-2 Altimetry
+# Code for: A method for constructing directional surface wave spectra  from ICESat-2 altimetry
 
 
 [![DOI](https://zenodo.org/badge/518172687.svg)](https://zenodo.org/badge/latestdoi/518172687)
@@ -7,8 +7,8 @@
 Momme Hell,
 July 2022,
 Brown University
-
-This is a minimal Working example for „“. We provide the original ATL03 and ATL07 data from XX downloaded on:
+https://tc.copernicus.org/articles/18/341/2024/ 
+This is a minimal Working example for „A method for constructing directional surface wave spectra  from ICESat-2 altimetry“. We provide the original ATL03 and ATL07 data from XX downloaded on:
 The in Hell and Horvat described analysis can be reproduced for the example tracks following the guide below
 
 This package uses and modifies code from icesat2_toolkit
