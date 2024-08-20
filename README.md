@@ -9,8 +9,10 @@ July 2022,
 Brown University
 
 This is a minimal Working example for [A method for constructing directional surface wave spectra from ICESat-2 altimetry](https://tc.copernicus.org/articles/18/341/2024/ 
-). We provide the original ATL03 and ATL07 data from XX downloaded on:
-The in Hell and Horvat described analysis can be reproduced for the example tracks following the guide below
+). We provide the original ATL03 and ATL07 data here:
+https://doi.org/10.5067/ATLAS/ATL03.005
+https://doi.org/10.5067/ATLAS/ATL07.003
+The in Hell and Horvat, 2024, described analysis can be reproduced for the example tracks following the guide below
 
 This package uses and modifies code from icesat2_toolkit
 https://read-icesat-2.readthedocs.io/
